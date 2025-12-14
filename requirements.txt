@@ -1,0 +1,27 @@
+# Web Framework
+fastapi==0.123.0
+uvicorn[standard]==0.38.0
+websockets==14.1
+python-multipart==0.0.18
+
+# HTTP Client
+httpx==0.28.1
+
+# Data Validation
+pydantic==2.12.5
+pydantic-settings==2.7.0
+
+# Security
+pycryptodome==3.23.0
+slowapi==0.1.9
+
+# Utilities
+python-decouple==3.8
+pytz==2025.2
+
+# Threading
+kthread==2.0.3
+
+# Testing
+pytest==8.4.2
+pytest-asyncio==0.24.0
