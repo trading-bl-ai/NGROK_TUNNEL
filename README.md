@@ -50,11 +50,28 @@ python -m http.server 3000
 **No installation required** - just run this single command:
 
 ```bash
+# Basic usage - tunnels localhost:3000
+curl https://ngrok.424th.com/client.sh | bash -s -- \
+  --api-key your-api-key-here-change-this-32ch \
+  --port 3000
+
+# With custom local host (e.g., 127.0.0.1:8080)
+curl https://ngrok.424th.com/client.sh | bash -s -- \
+  --api-key your-api-key-here-change-this-32ch \
+  --port 8080 \
+  --host 127.0.0.1
+
+# With custom name
 curl https://ngrok.424th.com/client.sh | bash -s -- \
   --api-key your-api-key-here-change-this-32ch \
   --port 3000 \
   --name my-dev-server
 ```
+
+**The `--host` parameter lets you tunnel ANY local address:**
+- `--host localhost --port 3000` → http://localhost:3000
+- `--host 127.0.0.1 --port 8080` → http://127.0.0.1:8080
+- `--host 192.168.1.100 --port 5000` → http://192.168.1.100:5000
 
 **Alternative (Python one-liner)**:
 ```bash
@@ -62,6 +79,7 @@ python3 <(curl -s https://ngrok.424th.com/client.py) \
   --server ngrok.424th.com \
   --api-key your-api-key-here-change-this-32ch \
   --port 3000 \
+  --host localhost \
   --https
 ```
 
@@ -344,9 +362,15 @@ curl https://ngrok.424th.com/api
 
 ## Client Usage Examples
 
-### Basic Usage
+### Basic Usage (localhost:3000)
 
 ```bash
+# One-liner (recommended)
+curl https://ngrok.424th.com/client.sh | bash -s -- \
+  --api-key YOUR_API_KEY \
+  --port 3000
+
+# Or manual download
 python client/tunnel_client.py \
   --server ngrok.424th.com \
   --api-key YOUR_API_KEY \
@@ -354,26 +378,36 @@ python client/tunnel_client.py \
   --https
 ```
 
+### Tunnel 127.0.0.1:8080
+
+```bash
+curl https://ngrok.424th.com/client.sh | bash -s -- \
+  --api-key YOUR_API_KEY \
+  --port 8080 \
+  --host 127.0.0.1
+```
+
+This will expose http://127.0.0.1:8080 → https://ngrok.424th.com/{tunnel_id}
+
+### Tunnel Different Host (e.g., 192.168.1.100:5000)
+
+```bash
+curl https://ngrok.424th.com/client.sh | bash -s -- \
+  --api-key YOUR_API_KEY \
+  --port 5000 \
+  --host 192.168.1.100
+```
+
+This will expose http://192.168.1.100:5000 → https://ngrok.424th.com/{tunnel_id}
+
 ### With Custom Name
 
 ```bash
-python client/tunnel_client.py \
-  --server ngrok.424th.com \
+curl https://ngrok.424th.com/client.sh | bash -s -- \
   --api-key YOUR_API_KEY \
   --port 8080 \
-  --name "my-awesome-app" \
-  --https
-```
-
-### Tunnel to Custom Host
-
-```bash
-python client/tunnel_client.py \
-  --server ngrok.424th.com \
-  --api-key YOUR_API_KEY \
-  --port 5000 \
-  --host 192.168.1.100 \
-  --https
+  --host 127.0.0.1 \
+  --name "my-awesome-app"
 ```
 
 ## How It Works
@@ -403,7 +437,9 @@ User accesses `https://ngrok.424th.com/{tunnel_id}/api/users`:
 
 Client receives request via WebSocket:
 - Deserializes HTTP request
-- Makes request to `http://localhost:PORT/api/users`
+- Makes request to `http://{local_host}:{local_port}/api/users`
+  - `local_host` can be `localhost`, `127.0.0.1`, or any IP address (default: localhost)
+  - `local_port` is the port your service is running on
 - Serializes HTTP response
 - Sends response back via WebSocket
 
