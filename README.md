@@ -13,12 +13,13 @@ Cloudflare → Traefik → Tunnel Server (Kubernetes) ⟷ WebSocket ⟷ Local Cl
 ## Features
 
 - ✅ **Self-hosted**: Runs in your Kubernetes cluster, no external dependencies
+- ✅ **One-liner Installation**: No downloads needed - just curl and run!
+- ✅ **Auto-cleanup on Disconnect**: Tunnels automatically deleted when client disconnects
 - ✅ **WebSocket-based**: Persistent bidirectional connections for low latency
 - ✅ **HTTP Tunneling**: Supports all HTTP methods (GET, POST, PUT, DELETE, etc.)
 - ✅ **Dynamic Endpoints**: Each tunnel gets a unique `/{tunnel_id}` path
 - ✅ **Authentication**: API key + per-tunnel token authentication
 - ✅ **Rate Limiting**: Built-in rate limiting for all endpoints
-- ✅ **Auto-cleanup**: Automatic cleanup of expired/inactive tunnels
 - ✅ **Production-ready**: FastAPI, Uvicorn, comprehensive logging, health checks
 - ✅ **Docker & Kubernetes**: Multi-stage Dockerfile, complete K8s manifests
 
@@ -35,13 +36,7 @@ kubectl get pods -n tunnel-server
 kubectl logs -n tunnel-server deployment/tunnel-server
 ```
 
-### 2. Install Client Dependencies
-
-```bash
-pip install httpx websockets
-```
-
-### 3. Run Local Service
+### 2. Run Local Service
 
 Start your local development server (e.g., Flask, Express, etc.):
 
@@ -50,14 +45,23 @@ Start your local development server (e.g., Flask, Express, etc.):
 python -m http.server 3000
 ```
 
-### 4. Start Tunnel Client
+### 3. Start Tunnel Client (One-Liner!)
+
+**No installation required** - just run this single command:
 
 ```bash
-python client/tunnel_client.py \
+curl https://ngrok.424th.com/client.sh | bash -s -- \
+  --api-key your-api-key-here-change-this-32ch \
+  --port 3000 \
+  --name my-dev-server
+```
+
+**Alternative (Python one-liner)**:
+```bash
+python3 <(curl -s https://ngrok.424th.com/client.py) \
   --server ngrok.424th.com \
   --api-key your-api-key-here-change-this-32ch \
   --port 3000 \
-  --name my-dev-server \
   --https
 ```
 
@@ -74,7 +78,7 @@ python client/tunnel_client.py \
 [14:23:46] Tunnel is active. Press Ctrl+C to stop.
 ```
 
-### 5. Access Your Local Service
+### 4. Access Your Local Service
 
 ```bash
 curl https://ngrok.424th.com/abc12345/
@@ -194,6 +198,29 @@ DELETE https://ngrok.424th.com/{tunnel_id}/api/remove
 First message must be authentication:
 ```json
 {"auth_token": "your-tunnel-auth-token"}
+```
+
+**Note**: Tunnels are automatically deleted when the WebSocket connection breaks.
+
+### Client Installer Endpoints
+
+**One-liner bash script** (recommended):
+```bash
+GET /client.sh
+# Usage: curl https://ngrok.424th.com/client.sh | bash -s -- --api-key KEY --port 3000
+```
+
+**Python client download**:
+```bash
+GET /client.py
+# Usage: curl https://ngrok.424th.com/client.py -o tunnel_client.py
+# Or: python3 <(curl -s https://ngrok.424th.com/client.py) --server ngrok.424th.com --api-key KEY --port 3000 --https
+```
+
+**Installation instructions**:
+```bash
+GET /install
+# Shows complete installation and usage instructions
 ```
 
 ## Configuration

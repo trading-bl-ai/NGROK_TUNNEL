@@ -12,7 +12,7 @@ from logs.logger import system_logger
 import time
 
 # Import routers
-from api import tunnel_api, tunnel_websocket, proxy_handler
+from api import tunnel_api, tunnel_websocket, proxy_handler, client_installer
 
 # Rate limiter
 limiter = Limiter(key_func=get_remote_address)
@@ -54,6 +54,7 @@ async def add_process_time_header(request: Request, call_next):
 app.include_router(tunnel_api.router)
 app.include_router(tunnel_websocket.router)
 app.include_router(proxy_handler.router)
+app.include_router(client_installer.router)
 
 
 # Root endpoint

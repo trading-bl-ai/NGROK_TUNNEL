@@ -138,7 +138,10 @@ async def tunnel_connect(websocket: WebSocket, tunnel_id: str):
             except asyncio.CancelledError:
                 pass
 
+            # Disconnect and auto-delete tunnel on connection break
             await tunnel_manager.disconnect_tunnel(tunnel_id)
+            await tunnel_manager.delete_tunnel(tunnel_id)
+            tunnel_logger.info(f"Auto-deleted tunnel {tunnel_id} after disconnect")
 
     except asyncio.TimeoutError:
         tunnel_logger.warning(f"Authentication timeout for tunnel: {tunnel_id}")
